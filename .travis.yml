@@ -1,0 +1,21 @@
+sudo: required
+language: bash
+services:
+  - docker
+
+env:
+  global:
+    - IMG=biggis/hdfs:2.7.1
+
+install:
+  #login to dockerhub
+  - docker login --email=$DOCKER_HUB_EMAIL --username=$DOCKER_HUB_USERNAME --password=$DOCKER_HUB_PASSWORD
+
+script:
+  #build the images
+  - docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t $IMG .
+
+after_success:
+  - echo "build successful"
+  #push the image to dockerhub
+  - docker push $IMG

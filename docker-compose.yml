@@ -1,0 +1,40 @@
+version: '2.1'
+
+services:
+  namenode:
+    image: biggis/hdfs:2.7.1
+    hostname: namenode
+    ports:
+      - "50070:50070"
+    command: start.sh namenode
+    environment:
+      - CLUSTER_NAME=${CLUSTER_NAME-dev}
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:8020
+      - CORE_CONF_hadoop_http_staticuser_user=root
+      - CORE_CONF_hadoop_proxyuser_hue_hosts=*
+      - CORE_CONF_hadoop_proxyuser_hue_groups=*
+      - HDFS_CONF_dfs_webhdfs_enabled=true
+      - HDFS_CONF_dfs_permissions_enabled=false
+    # volumes:
+    #   - hdfs-name:/hadoop/dfs/name
+
+  datanode:
+    image: biggis/hdfs:2.7.1
+    hostname: datanode
+    depends_on:
+        - namenode
+    domainname: hadoop
+    command: start.sh datanode
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:8020
+      - CORE_CONF_hadoop_http_staticuser_user=root
+      - CORE_CONF_hadoop_proxyuser_hue_hosts=*
+      - CORE_CONF_hadoop_proxyuser_hue_groups=*
+      - HDFS_CONF_dfs_webhdfs_enabled=true
+      - HDFS_CONF_dfs_permissions_enabled=false
+    # volumes:
+    #   - hdfs-data:/hadoop/dfs/data
+
+# volumes:
+#   hdfs-name:
+#   hdfs-data:
