@@ -22,7 +22,9 @@ services:
 
   datanode:
     image: biggis/hdfs:2.7.1
-    hostname: datanode
+    # using no specified hostname lets you scale datanode containers
+    # docker-compose scale datanode=4
+    # hostname: datanode
     depends_on:
         - namenode
     domainname: hadoop
