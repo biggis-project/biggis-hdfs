@@ -1,4 +1,4 @@
-FROM biggis/base:java8-jre-alpine
+FROM biggis/base:oraclejava8-jre
 
 MAINTAINER wipatrick
 
@@ -17,11 +17,11 @@ LABEL eu.biggis-project.build-date=$BUILD_DATE \
       eu.biggis-project.environment="dev" \
       eu.biggis-project.version=$HADOOP_VERSION
 
-ENV HADOOP_PREFIX=/opt/hadoop-$HADOOP_VERSION \
+ENV HADOOP_HOME=/opt/hadoop-$HADOOP_VERSION \
     HADOOP_CONF_DIR=/etc/hadoop \
     MULTIHOMED_NETWORK=1 \
-    HDFS_CONF_dfs_namenode_name_dir=file:///hadoop/dfs/name \
-    HDFS_CONF_dfs_datanode_data_dir=file:///hadoop/dfs/data
+    HDFS_CONF_dfs_namenode_name_dir=file:///opt/hadoop/dfs/name \
+    HDFS_CONF_dfs_datanode_data_dir=file:////opt/hadoop/dfs/data
 
 RUN set -x && \
     apk add --no-cache perl && \
@@ -29,19 +29,19 @@ RUN set -x && \
     curl -sS http://apache.mirrors.pair.com/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz | tar -xzf - -C /opt && \
     ln -s /opt/hadoop-$HADOOP_VERSION/etc/hadoop /etc/hadoop && \
     cp /etc/hadoop/mapred-site.xml.template /etc/hadoop/mapred-site.xml && \
-    mkdir -p /opt/hadoop-$HADOOP_VERSION/logs /hadoop/dfs/name /hadoop/dfs/data && \
+    mkdir -p /opt/hadoop-$HADOOP_VERSION/logs /opt/hadoop/dfs/name /opt/hadoop/dfs/data && \
     apk del build-dependencies && \
     rm -rf /var/cache/apk/*
 
-ENV PATH $HADOOP_PREFIX/bin:$PATH
+ENV PATH $HADOOP_HOME/bin:$PATH
+ENV HADOOP_COMMON_LIB_NATIVE_DIR $HADOOP_HOME/lib/native/
+ENV HADOOP_OPTS="$HADOOP_OPTS -Djava.library.path=$HADOOP_HOME/lib/native"
 
-ADD entrypoint.sh /opt/hadoop-$HADOOP_VERSION/bin/
-ADD start.sh /opt/hadoop-$HADOOP_VERSION/bin/
+ADD start.sh $HADOOP_HOME/bin/
 
-VOLUME /hadoop/dfs/name
-VOLUME /hadoop/dfs/data
+VOLUME /opt/hadoop/dfs/name
+VOLUME /opt/hadoop/dfs/data
 
-WORKDIR /opt/hadoop-$HADOOP_VERSION
+WORKDIR $HADOOP_HOME
 
-ENTRYPOINT ["entrypoint.sh"]
 CMD ["start.sh", "sh", "-c"]

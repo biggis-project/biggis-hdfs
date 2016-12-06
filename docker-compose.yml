@@ -8,6 +8,8 @@ services:
       - "50070:50070"
     command: start.sh namenode
     environment:
+      - USER_ID=${USER_ID-1000}
+      - USER_NAME=hadoop
       - CLUSTER_NAME=${CLUSTER_NAME-dev}
       - CORE_CONF_fs_defaultFS=hdfs://namenode:8020
       - CORE_CONF_hadoop_http_staticuser_user=root
@@ -26,6 +28,8 @@ services:
     domainname: hadoop
     command: start.sh datanode
     environment:
+      - USER_ID=${USER_ID-1000}
+      - USER_NAME=hadoop
       - CORE_CONF_fs_defaultFS=hdfs://namenode:8020
       - CORE_CONF_hadoop_http_staticuser_user=root
       - CORE_CONF_hadoop_proxyuser_hue_hosts=*
