@@ -6,6 +6,7 @@ services:
     hostname: namenode
     ports:
       - "50070:50070"
+      - "8020:8020"
     command: start.sh namenode
     environment:
       - USER_ID=${USER_ID-1000}
@@ -24,10 +25,12 @@ services:
     image: biggis/hdfs:2.7.1
     # using no specified hostname lets you scale datanode containers
     # docker-compose scale datanode=4
-    # hostname: datanode
+    hostname: datanode
     depends_on:
         - namenode
     domainname: hadoop
+    ports:
+      - "50010:50010"
     command: start.sh datanode
     environment:
       - USER_ID=${USER_ID-1000}

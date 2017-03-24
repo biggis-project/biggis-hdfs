@@ -1,6 +1,5 @@
 # BigGIS HDFS
-[![Build Status](https://travis-ci.org/biggis-project/biggis-hdfs.svg?branch=master)][Travis]
-[Travis]: https://travis-ci.org/biggis-project/biggis-hdfs
+[![Build Status](https://api.travis-ci.org/biggis-project/biggis-hdfs.svg)](https://travis-ci.org/biggis-project/biggis-hdfs)
 Docker container for Apache Hadoop
 
 

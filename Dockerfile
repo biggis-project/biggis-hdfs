@@ -21,7 +21,7 @@ ENV HADOOP_HOME=/opt/hadoop-$HADOOP_VERSION \
     HADOOP_CONF_DIR=/etc/hadoop \
     MULTIHOMED_NETWORK=1 \
     HDFS_CONF_dfs_namenode_name_dir=file:///opt/hadoop/dfs/name \
-    HDFS_CONF_dfs_datanode_data_dir=file:////opt/hadoop/dfs/data
+    HDFS_CONF_dfs_datanode_data_dir=file:///opt/hadoop/dfs/data
 
 RUN set -x && \
     apk add --no-cache perl && \
@@ -43,5 +43,8 @@ VOLUME /opt/hadoop/dfs/name
 VOLUME /opt/hadoop/dfs/data
 
 WORKDIR $HADOOP_HOME
+
+# Hdfs ports
+EXPOSE 50010 50020 50070 50075 50090 8020 9000
 
 CMD ["start.sh", "sh", "-c"]
