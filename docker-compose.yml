@@ -1,48 +1,49 @@
 version: '2.1'
 
 services:
-  namenode:
+  hdfs-name:
     image: biggis/hdfs:2.7.1
-    hostname: namenode
     ports:
       - "50070:50070"
       - "8020:8020"
-    command: start.sh namenode
+    command: start.sh name
     environment:
-      - USER_ID=${USER_ID-1000}
-      - USER_NAME=hadoop
-      - CLUSTER_NAME=${CLUSTER_NAME-dev}
-      - CORE_CONF_fs_defaultFS=hdfs://namenode:8020
-      - CORE_CONF_hadoop_http_staticuser_user=root
-      - CORE_CONF_hadoop_proxyuser_hue_hosts=*
-      - CORE_CONF_hadoop_proxyuser_hue_groups=*
-      - HDFS_CONF_dfs_webhdfs_enabled=true
-      - HDFS_CONF_dfs_permissions_enabled=false
+      USER_ID: ${USER_ID-1000}
+      USER_NAME: hdfs
+      HADOOP_MASTER_ADDRESS: hdfs-name
+      TIMEZONE: Europe/Berlin
     # volumes:
-    #   - hdfs-name:/hadoop/dfs/name
+    #   - hdfs-data:/data/hdfs
 
-  datanode:
+  hdfs-sname:
     image: biggis/hdfs:2.7.1
-    # using no specified hostname lets you scale datanode containers
-    # docker-compose scale datanode=4
-    hostname: datanode
     depends_on:
-        - namenode
-    domainname: hadoop
+        - hdfs-name
     ports:
-      - "50010:50010"
-    command: start.sh datanode
+      - "50090:50090"
+    command: start.sh sname
     environment:
-      - USER_ID=${USER_ID-1000}
-      - USER_NAME=hadoop
-      - CORE_CONF_fs_defaultFS=hdfs://namenode:8020
-      - CORE_CONF_hadoop_http_staticuser_user=root
-      - CORE_CONF_hadoop_proxyuser_hue_hosts=*
-      - CORE_CONF_hadoop_proxyuser_hue_groups=*
-      - HDFS_CONF_dfs_webhdfs_enabled=true
-      - HDFS_CONF_dfs_permissions_enabled=false
+      USER_ID: ${USER_ID-1000}
+      USER_NAME: hdfs
+      HADOOP_MASTER_ADDRESS: hdfs-name
+      TIMEZONE: Europe/Berlin
     # volumes:
-    #   - hdfs-data:/hadoop/dfs/data
+    #   - hdfs-data:/data/hdfs
+
+  hdfs-data:
+    image: biggis/hdfs:2.7.1
+    depends_on:
+        - hdfs-name
+    # ports:
+    #   - "50010:50010"
+    command: start.sh data
+    environment:
+      USER_ID: ${USER_ID-1000}
+      USER_NAME: hdfs
+      HADOOP_MASTER_ADDRESS: hdfs-name
+      TIMEZONE: Europe/Berlin
+    # volumes:
+    #   - hdfs-data:/data/hdfs
 
 # volumes:
 #   hdfs-name:

@@ -1,9 +1,8 @@
-FROM biggis/base:oraclejava8-jre
+FROM biggis/base:java8-jdk-alpine
 
 MAINTAINER wipatrick
 
 ARG HADOOP_VERSION=2.7.1
-
 ARG BUILD_DATE
 ARG VCS_REF
 
@@ -13,38 +12,23 @@ LABEL eu.biggis-project.build-date=$BUILD_DATE \
       eu.biggis-project.url="http://biggis-project.eu/" \
       eu.biggis-project.vcs-ref=$VCS_REF \
       eu.biggis-project.vcs-type="Git" \
-      eu.biggis-project.vcs-url="https://github.com/biggis-project/biggis-flink" \
+      eu.biggis-project.vcs-url="https://github.com/biggis-project/biggis-hdfs" \
       eu.biggis-project.environment="dev" \
       eu.biggis-project.version=$HADOOP_VERSION
 
-ENV HADOOP_HOME=/opt/hadoop-$HADOOP_VERSION \
-    HADOOP_CONF_DIR=/etc/hadoop \
-    MULTIHOMED_NETWORK=1 \
-    HDFS_CONF_dfs_namenode_name_dir=file:///opt/hadoop/dfs/name \
-    HDFS_CONF_dfs_datanode_data_dir=file:///opt/hadoop/dfs/data
+ENV HADOOP_HOME /opt/hadoop-$HADOOP_VERSION
+ENV HADOOP_CONF_DIR /etc/hadoop/conf
+ENV PATH $HADOOP_HOME/bin:/sbin:$PATH
 
 RUN set -x && \
     apk add --no-cache perl && \
     apk --update add --virtual build-dependencies curl && \
     curl -sS http://apache.mirrors.pair.com/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz | tar -xzf - -C /opt && \
-    ln -s /opt/hadoop-$HADOOP_VERSION/etc/hadoop /etc/hadoop && \
-    cp /etc/hadoop/mapred-site.xml.template /etc/hadoop/mapred-site.xml && \
-    mkdir -p /opt/hadoop-$HADOOP_VERSION/logs /opt/hadoop/dfs/name /opt/hadoop/dfs/data && \
+    mkdir -p /etc/hadoop/conf && \
     apk del build-dependencies && \
     rm -rf /var/cache/apk/*
 
-ENV PATH $HADOOP_HOME/bin:$PATH
-ENV HADOOP_COMMON_LIB_NATIVE_DIR $HADOOP_HOME/lib/native/
-ENV HADOOP_OPTS="$HADOOP_OPTS -Djava.library.path=$HADOOP_HOME/lib/native"
+COPY ./files /
+VOLUME ["/data/hdfs"]
 
-ADD start.sh $HADOOP_HOME/bin/
-
-VOLUME /opt/hadoop/dfs/name
-VOLUME /opt/hadoop/dfs/data
-
-WORKDIR $HADOOP_HOME
-
-# Hdfs ports
-EXPOSE 50010 50020 50070 50075 50090 8020 9000
-
-CMD ["start.sh", "sh", "-c"]
+CMD ["/sbin/start.sh"]
