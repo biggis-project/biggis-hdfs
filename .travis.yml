@@ -5,7 +5,8 @@ services:
 
 env:
   global:
-    - IMG=biggis/hdfs:2.7.1
+    - IMG_HDFS=biggis/hdfs:2.7.1
+    - IMG_HDFS_CLIENT=biggis/hdfs-client:2.7.1
 
 install:
   #login to dockerhub
@@ -13,9 +14,11 @@ install:
 
 script:
   #build the images
-  - docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t $IMG .
+  - docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t $IMG_HDFS .
+  - docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t $IMG_HDFS_CLIENT .
 
 after_success:
   - echo "build successful"
   #push the image to dockerhub
-  - docker push $IMG
+  - docker push $IMG_HDFS
+  - docker push $IMG_HDFS_CLIENT

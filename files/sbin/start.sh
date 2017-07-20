@@ -9,12 +9,12 @@ template $HADOOP_CONF_DIR/hdfs-site.xml
 
 # The first argument determines wether this container runs as data, namenode or secondary namenode
 if [ -z "$1" ]; then
-  echo "Select the role for this container with the docker cmd 'name', 'sname', 'data'"
+  echo "[ $(date) ] Select the role for this container with the docker cmd 'name', 'sname', 'data'"
   exit 1
 else
   if [ $1 = "name" ]; then
     if  [[ ! -f /data/hdfs/name/current/VERSION ]]; then
-      echo "Formatting namenode root fs in /data/hdfs/name..."
+      echo "[ $(date) ] Formatting namenode root fs in /data/hdfs/name..."
       hdfs namenode -format
     fi
     exec hdfs namenode

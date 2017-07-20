@@ -7,12 +7,30 @@ Docker container for Apache Hadoop
 Docker Compose >= 1.9.0
 
 ## Deployment
+Spinning up HDFS namenode, secondary namenode and datanode
 ```sh
 docker-compose up -d
+```
+The image ```biggis/hdfs-client:2.7.1``` can be used in order to interact with HDFS. Edit the ```HADOOP_MASTER_ADDRESS``` in the ```docker-compose.client.yml``` according to your setup and specify what ```hdfs dfs``` command you want to execute, e.g. copying a file (```hamlet.txt```) from you local host to the HDFS container cluster.
+```yaml
+version: '2.1'
+
+services:
+  hdfs-client:
+    image: biggis/hdfs-client:2.7.1
+    command: execute.sh -copyFromLocal /data/hdfs/hamlet.txt /
+    environment:
+      USER_ID: ${USER_ID-1000}
+      USER_NAME: hdfs
+      HADOOP_MASTER_ADDRESS: hdfs-name
+      TIMEZONE: Europe/Berlin
+    volumes:
+      - ./data/hamlet.txt:/data/hdfs/hamlet.txt
+```
+Then run the ```docker-compose.client.yml``` file as following.
+```sh
+docker-compose -f docker-compose.client.yml run --rm hdfs-client
 ```
 
 ## Ports
 - HDFS WebUI is running on port `50070`
-
-## Credits
-Hadoop Dockerfile were forked and adapted from [ITrust/hdfs](https://github.com/ITrust/docker-images/tree/master/hdfs)

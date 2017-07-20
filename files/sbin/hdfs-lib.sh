@@ -15,10 +15,10 @@ EOF
 function template() {
   local FILE=$1
   if [ -f $FILE ]; then
-    echo "Found config: $FILE"
+    echo "[ $(date) ] Found config: $FILE"
   else
     local TEMPLATE=${2:-$FILE.template}
-    echo "Template config: $FILE from $TEMPLATE"
+    echo "[ $(date) ] Template config: $FILE from $TEMPLATE"
     render_template $TEMPLATE > $FILE
   fi
 }
@@ -32,7 +32,7 @@ function with_backoff() {
   local exitCode=0
 
   while [ $attempt -le $max_attempts ]; do
-    echo "Attempt $attempt of $max_attempts: $@"
+    echo "[ $(date) ] Attempt $attempt of $max_attempts: $@"
     set +e
     "$@"
     exitCode=$?
@@ -50,11 +50,11 @@ function with_backoff() {
   done
 
   if [[ $exitCode != 0 ]]; then
-    echo "Fail: $@ failed to complete after $max_attempts attempts" 1>&2
+    echo "[ $(date) ] Fail: $@ failed to complete after $max_attempts attempts" 1>&2
   elif [[ $exitCode -gt 128 ]]; then
-    echo "Fail: $@ aborted by user" 1>&2
+    echo "[ $(date) ] Fail: $@ aborted by user" 1>&2
   else
-    echo "Success: $@ completed after $attempt attempts" 1>&2
+    echo "[ $(date) ] uccess: $@ completed after $attempt attempts" 1>&2
   fi
 
   return $exitCode
@@ -69,12 +69,12 @@ function is_port_open() {
 }
 
 function wait_until_port_open() {
-  echo "Checking for TCP connection to $1:$2..." 1>&2
+  echo "[ $(date) ] Checking for TCP connection to $1:$2..." 1>&2
   with_backoff is_port_open $1 $2
 }
 
 hdfs_is_available() {
-  echo "Checking for HDFS availability"
+  echo "[ $(date) ] Checking for HDFS availability"
 	hdfs dfs -test -d / > /dev/null
 	return $?
 }
@@ -83,9 +83,9 @@ function wait_until_hdfs_is_available() {
   with_backoff hdfs dfsadmin -safemode wait
 	with_backoff hdfs_is_available
 	if [ hdfs_is_available == 0 ]; then
-		echo "HDFS not available before timeout. Exiting ..." 1>&2
+		echo "[ $(date) ] HDFS not available before timeout. Exiting ..." 1>&2
 		exit 1
   else
-    echo "HDFS is now available ..." 1>&2
+    echo "[ $(date) ] HDFS is now available ..." 1>&2
 	fi
 }
