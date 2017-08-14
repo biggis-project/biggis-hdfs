@@ -21,7 +21,7 @@ ENV HADOOP_CONF_DIR /etc/hadoop/conf
 ENV PATH $HADOOP_HOME/bin:/sbin:$PATH
 ENV HADOOP_COMMON_LIB_NATIVE_DIR $HADOOP_HOME/lib/native
 ENV HADOOP_OPTS $HADOOP_OPTS -Djava.library.path=$HADOOP_HOME/lib/native
-ENV LD_LIBRARY_PATH /usr/local/hadoop/lib/native:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH $HADOOP_HOME/lib/native
 
 RUN set -x && \
     apk add --no-cache perl && \

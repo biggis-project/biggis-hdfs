@@ -54,7 +54,7 @@ function with_backoff() {
   elif [[ $exitCode -gt 128 ]]; then
     echo "[ $(date) ] Fail: $@ aborted by user" 1>&2
   else
-    echo "[ $(date) ] uccess: $@ completed after $attempt attempts" 1>&2
+    echo "[ $(date) ] Success: $@ completed after $attempt attempts" 1>&2
   fi
 
   return $exitCode
