@@ -18,4 +18,4 @@ LABEL eu.biggis-project.build-date=$BUILD_DATE \
 
 COPY ./client /
 
-CMD ["/sbin/execute.sh"]
+CMD ["/sbin/upload.sh"]

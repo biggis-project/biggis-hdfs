@@ -3,7 +3,7 @@ version: '2.1'
 services:
   hdfs-client:
     image: biggis/hdfs-client:2.7.1
-    command: execute.sh -copyFromLocal /data/hdfs/hamlet.txt /
+    command: upload.sh -copyFromLocal /data/hdfs/hamlet.txt /
     environment:
       USER_ID: ${USER_ID-1000}
       USER_NAME: hdfs
