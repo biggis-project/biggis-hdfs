@@ -11,4 +11,4 @@ services:
       HADOOP_MASTER_ADDRESS: hdfs-name
       TIMEZONE: Europe/Berlin
     # volumes:
-    #   - ./data:/data/hdfs
+    #   - ./data/hamlet.txt:/data/hdfs/hamlet.txt

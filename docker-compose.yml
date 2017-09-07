@@ -12,8 +12,8 @@ services:
       USER_NAME: hdfs
       HADOOP_MASTER_ADDRESS: hdfs-name
       TIMEZONE: Europe/Berlin
-    volumes:
-      - hdfs-data:/data/hdfs
+    # volumes:
+    #   - hdfs-data:/data/hdfs
 
   hdfs-sname:
     image: biggis/hdfs:2.7.1
@@ -27,24 +27,24 @@ services:
       USER_NAME: hdfs
       HADOOP_MASTER_ADDRESS: hdfs-name
       TIMEZONE: Europe/Berlin
-    volumes:
-      - hdfs-data:/data/hdfs
+    # volumes:
+    #   - hdfs-data:/data/hdfs
 
   hdfs-data:
     image: biggis/hdfs:2.7.1
     depends_on:
         - hdfs-name
-    ports:
-      - "50010:50010"
-      - "50075:50075"
+    expose:
+      - "50010"
+      - "50075"
     command: start.sh data
     environment:
       USER_ID: ${USER_ID-1000}
       USER_NAME: hdfs
       HADOOP_MASTER_ADDRESS: hdfs-name
       TIMEZONE: Europe/Berlin
-    volumes:
-      - hdfs-data:/data/hdfs
-
-volumes:
-  hdfs-data:
+#     volumes:
+#       - hdfs-data:/data/hdfs
+#
+# volumes:
+#   hdfs-data:
