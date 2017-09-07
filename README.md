@@ -11,6 +11,7 @@ Spinning up HDFS namenode, secondary namenode and datanode
 ```sh
 docker-compose up -d
 ```
+## Upload Data to Hadoop (hdfs client)
 The image ```biggis/hdfs-client:2.7.1``` can be used in order to interact with HDFS. Edit the ```HADOOP_MASTER_ADDRESS``` in the ```docker-compose.client.yml``` according to your setup and specify what ```hdfs dfs``` command you want to execute, e.g. copying a file (```hamlet.txt```) from you local host to the HDFS container cluster.
 ```yaml
 version: '2.1'
@@ -30,6 +31,16 @@ services:
 Then run the ```docker-compose.client.yml``` file as following.
 ```sh
 docker-compose -f docker-compose.client.yml run --rm hdfs-client
+```
+
+## Upload Data To Hadoop (webhdfs client)
+Build the webhdfs Docker container.
+```
+docker build -t webdfs -f Dockerfile.webhdfs .
+```
+Run the container to upload the Hadoop image in webhdfs folder.
+```
+docker run -ti --rm --net=biggishdfs_default webhdfs
 ```
 
 ## Ports
