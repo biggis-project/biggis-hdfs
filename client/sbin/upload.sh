@@ -12,7 +12,7 @@ function bootstrap {
     sed -i.bak "s/{HADOOP_MASTER_ADDRESS}/${HADOOP_MASTER_ADDRESS}/g" ${HADOOP_CONF_DIR}/core-site.xml
   fi
 
-  if [ ! -v ${REMOTE_URL} ]; then
+  if [ -z ${REMOTE_URL} ]; then
     wget $REMOTE_URL -P /data/hdfs
   fi
 }
