@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 set -eo pipefail
+set -o nounset
+
+REMOTE_URL=${REMOTE_URL:-}
 
 function bootstrap {
   # Run in all cases
@@ -12,7 +15,7 @@ function bootstrap {
     sed -i.bak "s/{HADOOP_MASTER_ADDRESS}/${HADOOP_MASTER_ADDRESS}/g" ${HADOOP_CONF_DIR}/core-site.xml
   fi
 
-  if [ -z ${REMOTE_URL} ]; then
+  if [ ! -z ${REMOTE_URL} ]; then
     wget $REMOTE_URL -P /data/hdfs
   fi
 }
