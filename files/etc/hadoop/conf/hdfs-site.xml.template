@@ -15,7 +15,7 @@
     </property>
     <property>
         <name>dfs.replication</name>
-        <value>1</value>
+        <value>3</value>
     </property>
     <property>
       <name>dfs.permissions</name>
@@ -25,10 +25,10 @@
         <name>dfs.name.dir</name>
         <value>file:///data/hdfs/name</value>
     </property>
-    /*<property>
+    <property>
         <name>dfs.data.dir</name>
         <value>file:///data/hdfs/data</value>
-    </property>*/
+    </property>
     <property>
        <name>dfs.namenode.checkpoint.dir</name>
        <value>file:///data/hdfs/namesecondary</value>
