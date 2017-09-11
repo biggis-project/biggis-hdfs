@@ -31,4 +31,5 @@ else
   bootstrap
   echo "[ $(date) ] hdfs dfs "$@" will be executed"
   exec hdfs dfs "$@"
+  echo "[ $(date) ] HDFS upload complete"
 fi
