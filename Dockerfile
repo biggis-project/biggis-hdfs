@@ -26,7 +26,7 @@ ENV LD_LIBRARY_PATH $HADOOP_HOME/lib/native
 RUN set -x && \
     apk add --no-cache perl && \
     apk --update add --virtual build-dependencies curl && \
-    curl -sS http://apache.mirrors.pair.com/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz | tar -xzf - -C /opt && \
+    curl -sS https://archive.apache.org/dist/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz | tar -xzf - -C /opt && \
     mkdir -p /etc/hadoop/conf && \
     apk del build-dependencies && \
     rm -rf /var/cache/apk/*
