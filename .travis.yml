@@ -5,18 +5,9 @@ services:
 
 env:
   global:
-    - VERSION=2.7.1
-  matrix:
-    - DOCKER=service
-      DOCKER_BUILD=biggis/hdfs:${VERSION}
-      DOCKERFILE=Dockerfile
-    - DOCKER=client
-      DOCKER_BUILD=biggis/hdfs-client:${VERSION}
-      DOCKERFILE=Dockerfile.client
-    - DOCKER=client
-      DOCKER_BUILD=biggis/hdfs-client-webhdfs:${VERSION}
-      DOCKERFILE=Dockerfile.webhdfs
-      DOCKERFILE=Dockerfile.webhdfs
+    - IMG_HDFS=biggis/hdfs:2.7.1
+    - IMG_HDFS_CLIENT=biggis/hdfs-client:2.7.1
+    - IMG_HDFS_CLIENT_WEBHDFS=biggis/hdfs-client-webhdfs:2.7.1
 
 install:
   #login to dockerhub
@@ -24,9 +15,13 @@ install:
 
 script:
   #build the images
-  - docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t ${DOCKER_BUILD} -f ${DOCKERFILE} .
+  - docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t $IMG_HDFS .
+  - docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t $IMG_HDFS_CLIENT -f Dockerfile.client .
+  - docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t $IMG_HDFS_CLIENT_WEBHDFS -f Dockerfile.webhdfs .
 
 after_success:
   - echo "build successful"
   #push the image to dockerhub
-  - docker push ${DOCKER_BUILD}
+  - docker push $IMG_HDFS
+  - docker push $IMG_HDFS_CLIENT
+  - docker push $IMG_HDFS_CLIENT_WEBHDFS
