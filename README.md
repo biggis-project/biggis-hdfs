@@ -55,13 +55,17 @@ docker-compose -f docker-compose.client.yml run --rm hdfs-client
 ```
 
 ## Upload Data To Hadoop (webhdfs client)
-Build the webhdfs Docker container.
+Edit the node script in `webhdfs/webhdfs-test.js` and build the image. Run the container to upload the Hadoop image in webhdfs folder.
+```yaml
+version: '2.1'
+
+services:
+  hdfs-client:
+    image: biggis/hdfs-client-webhdfs:2.7.1
 ```
-docker build -t webdfs -f Dockerfile.webhdfs .
-```
-Run the container to upload the Hadoop image in webhdfs folder.
-```
-docker run -ti --rm --net=biggishdfs_default webhdfs
+Then run the `docker-compose.webhdfs.yml` file as following.
+```sh
+docker-compose -f docker-compose.webhdfs.yml run --rm hdfs-client-webhdfs
 ```
 
 ## Ports
