@@ -8,6 +8,7 @@ env:
     - IMG_HDFS=biggis/hdfs:2.7.1
     - IMG_HDFS_CLIENT=biggis/hdfs-client:2.7.1
     - IMG_HDFS_CLIENT_WEBHDFS=biggis/hdfs-client-webhdfs:2.7.1
+    - IMG_HDFS_API=biggis/hdfs-api
 
 install:
   #login to dockerhub
@@ -16,8 +17,9 @@ install:
 script:
   #build the images
   - docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t $IMG_HDFS .
-  - docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t $IMG_HDFS_CLIENT -f Dockerfile.client .
-  - docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t $IMG_HDFS_CLIENT_WEBHDFS -f Dockerfile.webhdfs .
+  - docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t $IMG_HDFS_API -f Dockerfile.api .
+  - docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t $IMG_HDFS_CLIENT -f deprecated/Dockerfile.client .
+  - docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t $IMG_HDFS_CLIENT_WEBHDFS -f deprecated/Dockerfile.webhdfs .
 
 after_success:
   - echo "build successful"
@@ -25,3 +27,4 @@ after_success:
   - docker push $IMG_HDFS
   - docker push $IMG_HDFS_CLIENT
   - docker push $IMG_HDFS_CLIENT_WEBHDFS
+  - docker push IMG_HDFS_API

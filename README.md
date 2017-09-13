@@ -7,66 +7,67 @@ Docker container for Apache Hadoop
 Docker Compose >= 1.9.0
 
 ## Deployment
-Spinning up HDFS namenode, secondary namenode and datanode
+Spinning up HDFS namenode, secondary namenode, datanode and hdfs-api
 ```sh
 docker-compose up -d
 ```
-## Upload Data to Hadoop (hdfs client)
-The image ```biggis/hdfs-client:2.7.1``` can be used in order to interact with HDFS. Edit the ```HADOOP_MASTER_ADDRESS``` in the ```docker-compose.client.yml``` according to your setup and specify what ```hdfs dfs``` command you want to execute, e.g. copying a file (```hamlet.txt```) from you local host to the HDFS container cluster.
 
-Upload local files:
-```yaml
-version: '2.1'
+## Upload Files to HDFS
+To upload files (local or remote) simply use the API-service provided in this project.
+The following endpoints are available:
+* `/api/v1/upload/files` (POST)
+* `/api/v1/upload/remote` (POST)
+* `/api/v1/upload/jobs` (POST)
 
-services:
-  hdfs-client:
-    image: biggis/hdfs-client:2.7.1
-    command: upload.sh -copyFromLocal /data/hdfs/hamlet.txt /
-    environment:
-      USER_ID: ${USER_ID-1000}
-      USER_NAME: hdfs
-      #REMOTE_URL: http://landsat-pds.s3.amazonaws.com/L8/107/035/LC81070352015218LGN00/LC81070352015218LGN00_B3.TIF
-      HADOOP_MASTER_ADDRESS: hdfs-name
-      TIMEZONE: Europe/Berlin
-    volumes:
-      - ./data/hamlet.txt:/data/hdfs/hamlet.txt
-```
-
-Upload remote files:
-```yaml
-version: '2.1'
-
-services:
-  hdfs-client:
-    image: biggis/hdfs-client:2.7.1
-    command: upload.sh -copyFromLocal /data/hdfs /
-    environment:
-      USER_ID: ${USER_ID-1000}
-      USER_NAME: hdfs
-      REMOTE_URL: http://landsat-pds.s3.amazonaws.com/L8/107/035/LC81070352015218LGN00/LC81070352015218LGN00_B3.TIF
-      HADOOP_MASTER_ADDRESS: hdfs-name
-      TIMEZONE: Europe/Berlin
-    # volumes:
-    #   - ./data/hamlet.txt:/data/hdfs/hamlet.txt
-```
-Then run the ```docker-compose.client.yml``` file as following.
+## Example: Upload `hamlet.txt` to HDFS
+Once all containers are up and running, execute the following curl command:
 ```sh
-docker-compose -f docker-compose.client.yml run --rm hdfs-client
-```
-
-## Upload Data To Hadoop (webhdfs client)
-Edit the node script in `webhdfs/webhdfs-test.js` and build the image. Run the container to upload the Hadoop image in webhdfs folder.
-```yaml
-version: '2.1'
-
-services:
-  hdfs-client:
-    image: biggis/hdfs-client-webhdfs:2.7.1
-```
-Then run the `docker-compose.webhdfs.yml` file as following.
-```sh
-docker-compose -f docker-compose.webhdfs.yml run --rm hdfs-client-webhdfs
+curl -u hdfs:password \
+     -F 'file=@data/hamlet.txt' \
+     -X POST http://localhost:3000/api/v1/upload/files?hdfspath=/demo/hamlet.txt
+     
+{"message":"File(s) uploaded to HDFS. See: hdfs:///demo/hamlet.txt"}
 ```
 
 ## Ports
 - HDFS WebUI is running on port `50070`
+- HDFS API is running on port `3000`
+
+## Using the API
+#### Upload arbitrary local files to HDFS
+For a single file:
+```sh
+curl -u hdfs:password \
+     -F 'file=@your_file.png' \
+     -X POST http://localhost:3000/api/v1/upload/files?hdfspath=/path/to/your/files
+```
+For multiple files:
+```sh
+curl -u hdfs:password \
+     -F 'file=@your_file1.png' \
+     -F 'file=@your_file2.png' \
+     -X POST http://localhost:3000/api/v1/upload/files?hdfspath=/path/to/your/files
+```
+
+#### Upload local Spark Jobs to HDFS
+For a single job:
+```sh
+curl -u hdfs:password \
+     -F 'job=@your_jar.jar' \
+     -X POST http://localhost:3000/api/v1/upload/jobs?hdfspath=/path/to/your/jobs
+```
+For multiple jobs:
+```sh
+curl -u hdfs:password \
+     -F 'job=@your_jar1.jar' \
+     -F 'job=@your_jar2.jar' \
+     -X POST http://localhost:3000/api/v1/upload/jobs?hdfspath=/path/to/your/jobs
+```
+
+#### Upload remote files to HDFS
+```sh
+curl -u hdfs:password \
+     -d '{"url": "your_url", "hdfspath": "/path/to/your/files"}' \
+     -H "Content-Type: application/json" \
+     -X POST http://localhost:3000/api/v1/upload/remote
+```

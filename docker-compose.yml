@@ -45,6 +45,20 @@ services:
       TIMEZONE: Europe/Berlin
 #     volumes:
 #       - hdfs-data:/data/hdfs
-#
+
+  api:
+    image: biggis/hdfs-api
+    depends_on:
+      - hdfs-name
+      - hdfs-data
+    ports:
+      - "3000:3000"
+    command: npm start
+    environment:
+      HADOOP_MASTER_ADDRESS: hdfs-name
+      USERNAME: hdfs
+      PASSWORD: password
+
+
 # volumes:
 #   hdfs-data:

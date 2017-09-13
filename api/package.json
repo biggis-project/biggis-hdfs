@@ -1,0 +1,19 @@
+{
+  "name": "hdfs-api",
+  "version": "0.0.1",
+  "description": "simple webhdfs api to upload filed",
+  "main": "api.js",
+  "scripts": {
+    "start": "node api.js"
+  },
+  "author": "wipatrick",
+  "license": "MIT",
+  "dependencies": {
+    "express": "~4.0.0",
+    "basic-auth-connect": "~1.0.0",
+    "webhdfs": "^1.1.1",
+    "multer": "~1.3.0",
+    "http": "*",
+    "body-parser": "~1.18.1"
+  }
+}
