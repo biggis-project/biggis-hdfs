@@ -8,7 +8,7 @@ env:
     - IMG_HDFS=biggis/hdfs:2.7.1
     - IMG_HDFS_CLIENT=biggis/hdfs-client:2.7.1
     - IMG_HDFS_CLIENT_WEBHDFS=biggis/hdfs-client-webhdfs:2.7.1
-    - IMG_HDFS_API=biggis/hdfs-api
+    - IMG_HDFS_API=biggis/hdfs-api:latest
 
 install:
   #login to dockerhub
@@ -27,4 +27,4 @@ after_success:
   - docker push $IMG_HDFS
   - docker push $IMG_HDFS_CLIENT
   - docker push $IMG_HDFS_CLIENT_WEBHDFS
-  - docker push IMG_HDFS_API
+  - docker push $IMG_HDFS_API
