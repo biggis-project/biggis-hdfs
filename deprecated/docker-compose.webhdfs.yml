@@ -1,5 +1,0 @@
-version: '2.1'
-
-services:
-  hdfs-client-webhdfs:
-    image: biggis/hdfs-client-webhdfs:2.7.1

@@ -1,0 +1,87 @@
+version: '2'
+services:
+
+  hdfs-name:
+    image: biggis/hdfs:2.7.1
+    ports:
+      - "50070:50070"
+      - "8020:8020"
+    command: start.sh name
+    environment:
+      USER_ID: 1000
+      USER_NAME: hdfs
+      HADOOP_MASTER_ADDRESS: hdfs-name.hdfs
+      TIMEZONE: Europe/Berlin
+    labels:
+       io.rancher.container.pull_image: 'always'
+       io.rancher.container.hostname_override: 'container_name'
+       io.rancher.scheduler.affinity:host_label: 'hdfs-name=true'
+    volumes:
+      - hdfs-namenode:/data/hdfs
+      - hadoop-conf:/etc/hadoop/conf
+
+  hdfs-sname:
+    image: biggis/hdfs:2.7.1
+    depends_on:
+        - hdfs-name
+    ports:
+      - "50090:50090"
+    command: start.sh sname
+    environment:
+      USER_ID: 1000
+      USER_NAME: hdfs
+      HADOOP_MASTER_ADDRESS: hdfs-name.hdfs
+      TIMEZONE: Europe/Berlin
+    labels:
+      io.rancher.container.pull_image: 'always'
+      io.rancher.container.hostname_override: 'container_name'
+    volumes:
+      - hdfs-snamenode:/data/hdfs
+
+  hdfs-data:
+    image: biggis/hdfs:2.7.1
+    depends_on:
+        - hdfs-name
+    ports:
+      - "50010:50010"
+      - "50075:50075"
+    command: start.sh data
+    environment:
+      USER_ID: 1000
+      USER_NAME: hdfs
+      HADOOP_MASTER_ADDRESS: hdfs-name.hdfs
+      TIMEZONE: Europe/Berlin
+    labels:
+      io.rancher.container.pull_image: 'always'
+      io.rancher.container.hostname_override: 'container_name'
+      io.rancher.scheduler.global: 'true'
+    volumes:
+      - hdfs-datanode:/data/hdfs
+
+  api:
+    image: biggis/hdfs-api
+    depends_on:
+      - hdfs-name
+      - hdfs-data
+    ports:
+      - "3000:3000"
+    command: npm start
+    environment:
+      HADOOP_MASTER_ADDRESS: hdfs-name.hdfs
+      USERNAME: hdfs
+      PASSWORD: password
+    labels:
+      io.rancher.container.pull_image: 'always'
+      io.rancher.container.hostname_override: 'container_name'
+      io.rancher.scheduler.affinity:host_label: 'hdfs-api=true'
+
+volumes:
+  hdfs-namenode:
+    driver: rancher-nfs
+    external: true
+  hdfs-snamenode:
+    driver: rancher-nfs
+    external: true
+  hadoop-conf:
+    driver: rancher-nfs
+    external: true

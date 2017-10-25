@@ -7,10 +7,16 @@ Docker container for Apache Hadoop
 Docker Compose >= 1.9.0
 
 ## Deployment
-Spinning up HDFS namenode, secondary namenode, datanode and hdfs-api
+
+**On local setup**:
 ```sh
 docker-compose up -d
 ```
+
+**On Rancher**:
+* NFS server and Rancher NFS service need to be configured in the cluster. The NFS volumes `hdfs-namenode`, `hdfs-snamenode` and `hadoop-conf` need to be created via the Rancher WebUI.
+* Add host labels `hdfs-name=true` & `hdfs-api=true` to any of your hosts.
+* Create new HDFS stack `hdfs` via Rancher WebUI and deploy `docker-compose.rancher.yml`.
 
 ## Upload Files to HDFS
 To upload files (local or remote) simply use the API-service provided in this project.
@@ -25,7 +31,7 @@ Once all containers are up and running, execute the following curl command:
 curl -u hdfs:password \
      -F 'file=@data/hamlet.txt' \
      -X POST http://localhost:3000/api/v1/upload/files?hdfspath=/demo/hamlet.txt
-     
+
 {"message":"File(s) uploaded to HDFS. See: hdfs:///demo/hamlet.txt"}
 ```
 
