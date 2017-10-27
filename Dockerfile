@@ -32,6 +32,5 @@ RUN set -x && \
     rm -rf /var/cache/apk/*
 
 COPY ./files /
-VOLUME ["/data/hdfs"]
 
 CMD ["/sbin/start.sh"]
