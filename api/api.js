@@ -130,6 +130,46 @@ router.post('/v1/upload/remote', function(req, res) {
   downloadFile(url, hdfsPath, fileName, res);
 });
 
+router.get("/v1/download", function(req, res) {
+  var qpath = req.param('hdfspath');
+  
+  if(!qpath) {
+    res.json({
+      message: "Specify hdfspath: /v1/download/files?hdfspath=/path"
+    });
+  }
+  
+  var remoteFileStream = hdfs.createReadStream(qpath);
+  var error = false;
+  var chunkCount = 0;
+
+  remoteFileStream.on("error", function onError(err) {
+    res.writeHead(500, {
+      "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify(err));
+    error = true;
+    
+  });
+
+
+  remoteFileStream.on("data", function(chunk) {
+
+    res.write(chunk);
+    chunkCount = chunkCount+1;
+  })
+
+  remoteFileStream.on("finish", function onFinish() {
+    if (!error) {
+      res.writeHead(200, {
+        "Content-Type": "application/octet-stream",
+        "Content-Disposition": "attachment; filename=image.tif"
+      });
+      res.end();
+    }
+  })
+});
 
 // ----------------------------------------------------------------------------
 // Helper functions

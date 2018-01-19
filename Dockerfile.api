@@ -14,9 +14,8 @@ LABEL eu.biggis-project.build-date=$BUILD_DATE \
 
 WORKDIR /usr/src/app
 
-COPY api/package.json .
-RUN npm install
+ADD ./api .
 
-COPY ./api .
+RUN npm install
 
 CMD ["npm", "start"]

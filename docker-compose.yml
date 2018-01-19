@@ -3,6 +3,7 @@ version: '2.1'
 services:
   hdfs-name:
     image: biggis/hdfs:2.7.1
+    container_name: hdfs-name
     ports:
       - "50070:50070"
       - "8020:8020"
@@ -12,11 +13,14 @@ services:
       USER_NAME: hdfs
       HADOOP_MASTER_ADDRESS: hdfs-name
       TIMEZONE: Europe/Berlin
-    # volumes:
+    networks:
+        - hdfs
+      # volumes:
     #   - hdfs-data:/data/hdfs
 
   hdfs-sname:
     image: biggis/hdfs:2.7.1
+    container_name: hdfs-sname
     depends_on:
         - hdfs-name
     ports:
@@ -27,6 +31,8 @@ services:
       USER_NAME: hdfs
       HADOOP_MASTER_ADDRESS: hdfs-name
       TIMEZONE: Europe/Berlin
+    networks:
+        - hdfs    
     # volumes:
     #   - hdfs-data:/data/hdfs
 
@@ -43,11 +49,17 @@ services:
       USER_NAME: hdfs
       HADOOP_MASTER_ADDRESS: hdfs-name
       TIMEZONE: Europe/Berlin
+    networks:
+        - hdfs
 #     volumes:
 #       - hdfs-data:/data/hdfs
 
   api:
-    image: biggis/hdfs-api
+    build:
+        context: ./
+        dockerfile: ./Dockerfile.api
+    image: hdfs-api:0.0.2
+    container_name: hdfs-api
     depends_on:
       - hdfs-name
       - hdfs-data
@@ -58,7 +70,12 @@ services:
       HADOOP_MASTER_ADDRESS: hdfs-name
       USERNAME: hdfs
       PASSWORD: password
-
+    networks:
+        - hdfs
 
 # volumes:
 #   hdfs-data:
+
+networks:
+    hdfs:
+        driver: bridge
