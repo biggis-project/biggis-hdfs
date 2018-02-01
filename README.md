@@ -134,10 +134,12 @@ There are two additional API endpoints `describe` will use a *readdir* (read dir
 
 `list` on the other hand will only list downloadable files as a plain text list, e.g.
 
-> http://localhost:3000/api/v1/download?hdfspath=/test/test_1.tif
-> http://localhost:3000/api/v1/download?hdfspath=/test/test_2.tif
-> http://localhost:3000/api/v1/download?hdfspath=/test/test_3.tif
-> http://localhost:3000/api/v1/download?hdfspath=/test/test_4.tif
+```
+http://localhost:3000/api/v1/download?hdfspath=/test/test_1.tif
+http://localhost:3000/api/v1/download?hdfspath=/test/test_2.tif
+http://localhost:3000/api/v1/download?hdfspath=/test/test_3.tif
+http://localhost:3000/api/v1/download?hdfspath=/test/test_4.tif
+```
 
 The latter function is intended to be used in combination with GDAL on the client. `gdalbuildvrt` is a handy tool to create a remote representation of a tiled data set. There is a parameter to import the tiles as a text file. At this point the `list` operation comes into play, which will provide exactly this.
 
