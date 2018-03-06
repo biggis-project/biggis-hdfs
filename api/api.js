@@ -130,12 +130,100 @@ router.post('/v1/upload/remote', function(req, res) {
   downloadFile(url, hdfsPath, fileName, res);
 });
 
+router.get("/v1/download", function(req, res) {
+  var qpath = req.param('hdfspath');
+  
+  if(!qpath) {
+    res.json({
+      message: "Specify hdfspath: /v1/download/files?hdfspath=/path"
+    });
+  }
+  
+  var remoteFileStream = hdfs.createReadStream(qpath);
+  var data = [];
+  var error = false;
 
+  remoteFileStream.once("error", function onError(err) {
+    res.writeHead(500, {
+      "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify(err));
+    error = true;
+    
+  });
+
+
+  remoteFileStream.on("data", function(chunk) {
+    data.push(chunk)
+  })
+
+  remoteFileStream.once("finish", function onFinish() {
+    if (!error) {
+      filename = qpath.substr(qpath.lastIndexOf("/")+1, qpath.length)
+      res.writeHead(200, {
+        "Content-Disposition": "attachment; filename="+filename
+      });
+      res.write(Buffer.concat(data));
+      res.end();
+    }
+  })
+});
+
+
+router.get("/v1/data/list", function(req, res) {
+  var qpath = req.param('hdfspath');
+
+  hdfs.readdir(qpath,function(err,files) {
+    if (err) {
+      res.writeHead(500,{
+        "Content-Type": "application/json"
+      });
+      res.write(JSON.stringify({
+        message: "Cannot read given file path or directory"
+      }));
+    } else {
+      res.writeHead(200,{
+        "Content-Type": "text/plain"
+      });
+      for (var index in files) {
+        var file = files[index]
+        qpath = qpath.replace(/\/$/,"");
+
+        if (file.type == "FILE") {
+          res.write("http://"+req.headers.host+"/api/v1/download?hdfspath="+qpath+"/"+file.pathSuffix+"\n");
+        }
+      }
+    }
+    
+    res.end();
+  });
+});
+
+router.get("/v1/data/describe", function(req, res) {
+  var qpath = req.param('hdfspath');
+  hdfs.readdir(qpath,function(err,files) {
+    if (err) {
+      res.writeHead(500,{
+        "Content-Type": "application/json"
+      });
+      res.write(JSON.stringify({
+        message: "Cannot read given file path or directory"
+      }));
+    } else {
+      res.writeHead(200,{
+        "Content-Type": "application/json"
+      });
+      res.write(JSON.stringify(files));
+    }
+    res.end();
+  });
+});
 // ----------------------------------------------------------------------------
 // Helper functions
 // ----------------------------------------------------------------------------
 function hdfsUpload(filePath, hdfsFilePath, hdfsPath, res){
-
+  var failure=false;
   // var filePath = file.path;
   // var hdfsFilePath = hdfsPath + "/" + file.filename;
 
@@ -146,20 +234,31 @@ function hdfsUpload(filePath, hdfsFilePath, hdfsPath, res){
 
   remote.on('error', (err) => {
     console.error(err)
+    failure = true;
   });
 
   remote.on('finish', () => {
-    res.json({
-      message: "File(s) uploaded to HDFS. See: hdfs://" + hdfsPath
-    });
-    console.log("File uploaded complete. Local: " + filePath + " -> HDFS: hdfs://" + hdfsFilePath)
-    console.log('Delete local file ' + filePath);
-    //Delete intermediate files in container
-    fs.unlink(filePath, function(error) {
-      if (error) {
-          throw error;
-      }
-    });
+    if (!failure) {
+      res.json({
+        message: "File(s) uploaded to HDFS. See: hdfs://" + hdfsPath
+      });
+      console.log("File uploaded complete. Local: " + filePath + " -> HDFS: hdfs://" + hdfsFilePath)
+      console.log('Delete local file ' + filePath);
+      //Delete intermediate files in container
+      fs.unlink(filePath, function(error) {
+        if (error) {
+            throw error;
+        }
+      });
+    } else {
+      res.writeHead(500, {
+        "Content-Type": "application/json"
+      });
+      res.end({
+        message: "File upload canceled due to an internal error."
+      });
+      
+    }
   });
 
 }
