@@ -132,13 +132,13 @@ router.post('/v1/upload/remote', function(req, res) {
 
 router.get("/v1/download", function(req, res) {
   var qpath = req.param('hdfspath');
-  
+
   if(!qpath) {
     res.json({
       message: "Specify hdfspath: /v1/download/files?hdfspath=/path"
     });
   }
-  
+
   var remoteFileStream = hdfs.createReadStream(qpath);
   var data = [];
   var error = false;
@@ -150,7 +150,7 @@ router.get("/v1/download", function(req, res) {
 
     res.end(JSON.stringify(err));
     error = true;
-    
+
   });
 
 
@@ -195,7 +195,7 @@ router.get("/v1/data/list", function(req, res) {
         }
       }
     }
-    
+
     res.end();
   });
 });
@@ -257,7 +257,7 @@ function hdfsUpload(filePath, hdfsFilePath, hdfsPath, res){
       res.end({
         message: "File upload canceled due to an internal error."
       });
-      
+
     }
   });
 

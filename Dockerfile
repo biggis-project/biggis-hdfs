@@ -24,8 +24,8 @@ ENV HADOOP_OPTS $HADOOP_OPTS -Djava.library.path=$HADOOP_HOME/lib/native
 ENV LD_LIBRARY_PATH $HADOOP_HOME/lib/native
 
 RUN set -x && \
-    apk add --no-cache perl && \
-    apk --update add --virtual build-dependencies curl && \
+    apk add --no-cache perl curl && \
+    apk --update add --virtual build-dependencies && \
     curl -sS https://archive.apache.org/dist/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz | tar -xzf - -C /opt && \
     mkdir -p /etc/hadoop/conf && \
     apk del build-dependencies && \
